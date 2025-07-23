@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oracle Whisper - Illuminati Portal</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- TensorFlow + BlazeFace -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.6.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #000000, #050505);
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    .glass {
+      backdrop-filter: blur(10px);
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 255, 224, 0.2);
+    }
+
+    .neon-text {
+      text-shadow: 0 0 10px #00ffe0, 0 0 20px #00ffe0;
+    }
+
+    .glow-border {
+      box-shadow: 0 0 20px #00ffe0, 0 0 40px #00ffe0;
+    }
+
+    #particle-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen p-4 relative">
+
+  <canvas id="particle-canvas"></canvas>
+
+  <div class="glass rounded-3xl p-8 max-w-md w-full text-center glow-border">
+    <h1 class="text-4xl md:text-5xl font-bold mb-6 neon-text animate-pulse">
+      👁️ Oracle Whisper 👁️
+    </h1>
+    <p class="text-gray-300 mb-4">Ask your question or let the Oracle sense who is with you...</p>
+
+    <input type="text" id="questionInput" placeholder="Type your question here..."
+      class="w-full p-3 rounded bg-gray-900 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-400 mb-4" />
+
+    <button id="askButton"
+      class="w-full bg-teal-400 text-black font-semibold py-3 rounded hover:bg-teal-300 transition duration-300">
+      Whisper to Oracle
+    </button>
+
+    <video id="video" width="320" height="240" autoplay muted class="rounded-lg shadow-lg mt-4 mx-auto"></video>
+    <div id="oracleMessage" class="mt-6 p-4 rounded bg-black bg-opacity-60 text-teal-300 hidden"></div>
+  </div>
+
+  <script type="module">
+    const video = document.getElementById('video');
+    const oracleMessage = document.getElementById('oracleMessage');
+    const questionInput = document.getElementById('questionInput');
+    const askButton = document.getElementById('askButton');
+
+    async function setupCamera() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      video.srcObject = stream;
+      return new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          resolve(video);
+        };
+      });
+    }
+
+    async function detectFace() {
+      const model = await blazeface.load();
+      setInterval(async () => {
+        const predictions = await model.estimateFaces(video, false);
+        if (predictions.length > 0) {
+          oracleMessage.innerText = "🔮 The Oracle senses a presence... Someone is beside you.";
+          oracleMessage.classList.remove('hidden');
+        } else {
+          oracleMessage.innerText = "🔮 The Oracle sees no one near you... yet.";
+          oracleMessage.classList.remove('hidden');
+        }
+      }, 2000);
+    }
+
+    askButton.addEventListener('click', () => {
+      const question = questionInput.value.toLowerCase();
+      let answer = '';
+
+      if (question.includes('who is sitting beside me')) {
+        answer = '🔮 The Oracle whispers: Someone with hidden energies is beside you.';
+      } else if (question.includes('future') || question.includes('what will happen')) {
+        answer = '🔮 The Oracle whispers: The path ahead is filled with shadows, tread carefully.';
+      } else if (question.trim() === '') {
+        answer = '🔮 The Oracle says: Ask, and you shall receive an answer from the abyss.';
+      } else {
+        answer = '🔮 The Oracle whispers: The unseen forces remain silent on this matter.';
+      }
+
+      oracleMessage.textContent = answer;
+      oracleMessage.classList.remove('hidden');
+    });
+
+    await setupCamera();
+    video.play();
+    detectFace();
+
+    // Particle background
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 0.5 - 0.25;
+        this.speedY = Math.random() * 0.5 - 0.25;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.fillStyle = 'rgba(0, 255, 224, 0.3)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < 100; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+
+    initParticles();
+    animateParticles();
+  </script>
+
+</body>
+
+</html>

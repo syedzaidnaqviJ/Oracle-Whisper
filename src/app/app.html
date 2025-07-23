@@ -1,0 +1,20 @@
+<div class="min-h-screen flex flex-col items-center justify-center px-4">
+  <h1 class="text-5xl mb-8 font-bold text-neon animate-pulse">
+    Oracle Whisper
+  </h1>
+
+  <div class="w-full max-w-md bg-gray-900 bg-opacity-50 p-8 rounded-2xl shadow-2xl">
+    <label class="block mb-4 text-lg">Ask the Oracle anything:</label>
+    <input [(ngModel)]="question" placeholder="Type your question..."
+      class="w-full p-4 rounded bg-gray-800 text-white focus:outline-none mb-4" />
+
+    <button (click)="askOracle()"
+      class="w-full bg-neon text-black font-bold py-3 rounded hover:bg-teal-300 transition-colors">
+      Whisper to Oracle
+    </button>
+
+    <div *ngIf="answer" class="mt-6 p-4 bg-gray-800 rounded text-neon">
+      {{ answer }}
+    </div>
+  </div>
+</div>
